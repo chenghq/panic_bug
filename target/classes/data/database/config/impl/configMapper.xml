@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="data.database.config.ConfigMapper">
+    <resultMap id="BaseResultMap" type="data.database.config.pojo.Config">
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="org_id" property="orgId" jdbcType="INTEGER" />
+        <result column="itp_code" property="itpCode" jdbcType="VARCHAR" />
+        <result column="sys_cnname" property="sysCnname" jdbcType="VARCHAR" />
+        <result column="sys_enname" property="sysEnname" jdbcType="VARCHAR" />
+        <result column="sys_name" property="sysName" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="status" property="status" jdbcType="INTEGER" />
+        <result column="default_yunwei_admin" property="defaultYunweiAdmin" jdbcType="VARCHAR"/>
+        <result column="id" property="entityId" jdbcType="INTEGER"/>
+        <result column="id" property="majorDataId" jdbcType="INTEGER"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id,org_id,itp_code,sys_cnname,sys_name,sys_enname,create_time,update_time,status,default_yunwei_admin
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM sm_system
+        WHERE id = #{id,jdbcType=INTEGER}
+        and status = 1
+    </select>
+    <insert id="insert" parameterType="data.database.config.pojo.Config">
+        insert into sm_system (
+        <include refid="Base_Column_List" />
+        )
+        values (
+        #{id,jdbcType=INTEGER},
+        #{orgId,jdbcType=INTEGER},
+        #{itpCode,jdbcType=VARCHAR},
+        #{sysCnname,jdbcType=VARCHAR},
+        #{sysName,jdbcType=VARCHAR},
+        #{sysEnname,jdbcType=VARCHAR},
+        #{createTime,jdbcType=TIMESTAMP},
+        #{updateTime,jdbcType=TIMESTAMP},
+        #{status,jdbcType=INTEGER},
+        #{defaultYunweiAdmin,jdbcType=VARCHAR}
+        )
+    </insert>
+    <update id="updateByPrimaryKey" parameterType="data.database.config.pojo.Config">
+        update sm_system
+        set org_id = #{orgId,jdbcType=VARCHAR},
+        itp_code = #{itpCode,jdbcType=VARCHAR},
+        sys_cnname = #{sysCnname,jdbcType=VARCHAR},
+        sys_name = #{sysName,jdbcType=VARCHAR},
+        sys_enname = #{sysEnname,jdbcType=VARCHAR},
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+        status = #{status,jdbcType=INTEGER},
+        default_yunwei_admin = #{defaultYunweiAdmin,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <!-- 自定义 -->
+    <resultMap id="LinkEnvResultMap" type="data.database.config.pojo.Config">
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="org_id" property="orgId" jdbcType="INTEGER" />
+        <result column="itp_code" property="itpCode" jdbcType="VARCHAR" />
+        <result column="sys_cnname" property="sysCnname" jdbcType="VARCHAR" />
+        <result column="sys_enname" property="sysEnname" jdbcType="VARCHAR" />
+        <result column="sys_name" property="sysName" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="status" property="status" jdbcType="INTEGER" />
+        <result column="env_count" property="envCount" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <select id="getSysLinkEnv" resultMap="LinkEnvResultMap" parameterType="java.util.HashMap">
+        SELECT
+        sm_system.*, ENV.envCount
+        FROM
+        ad_user, ad_entity_user_role members, sm_system
+        LEFT JOIN
+        (SELECT sm_system.id, COUNT(em_environment.id) AS envCount  FROM sm_system
+        LEFT JOIN em_sys_env ON sm_system.id = em_sys_env.sys_id
+        LEFT JOIN em_environment ON em_environment.id=em_sys_env.env_id
+        GROUP BY sm_system.id) ENV
+        ON ENV.id = sm_system.id
+        WHERE
+        ad_user.id = members.user_id AND sm_system.id = members.resource_id AND members.resource_type = 'sys' AND sm_system.status=1
+
+        <if test="userName != null">
+            AND ad_user.user_name = #{userName}
+        </if>
+        <if test="keyword != null">
+            AND (sm_system.sys_cnname LIKE concat('%',#{keyword},'%')
+            OR sm_system.sys_enname LIKE concat('%',#{keyword},'%')
+            OR sm_system.sys_name LIKE concat('%',#{keyword},'%')
+            )
+        </if>
+        GROUP BY sm_system.id
+        <if test="page != null">
+            limit #{page},#{pageSize}
+        </if>
+    </select>
+
+
+    <select id="getSystemByEnvId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        SELECT
+        sys.*
+        FROM
+        sm_system sys,
+        em_sys_env sysenv
+        WHERE
+        sys.id = sysenv.sys_id
+        AND sys.STATUS = 1
+        AND sysenv.env_id = #{value}
+        order by sys.id asc limit 1
+    </select>
+
+    <select id="searchSystem" resultMap="BaseResultMap" parameterType="java.util.Map">
+        SELECT
+        sys.*
+        FROM
+        sm_system sys
+        WHERE
+        sys.status=1
+        <if test="keyword != null and keyword != ''">
+            AND (sys.sys_cnname LIKE concat('%',#{keyword},'%')
+            OR sys.sys_enname LIKE concat('%',#{keyword},'%')
+            OR sys.sys_name LIKE concat('%',#{keyword},'%')
+            )
+        </if>
+        <if test="sysIds != null">
+            AND sys.id IN (${sysIds})
+        </if>
+        order by sys.id DESC
+        <if test="page != null">
+            limit #{page},#{pageSize}
+        </if>
+    </select>
+
+    <select id="cupidGetSystems" resultMap="BaseResultMap" parameterType="java.util.Map">
+        SELECT
+        sys.*
+        FROM
+        sm_system sys
+        WHERE
+        sys.status=1
+        <if test="keyword != null and keyword != ''">
+            AND (sys.sys_cnname LIKE concat('%',#{keyword},'%')
+            OR sys.sys_enname LIKE concat('%',#{keyword},'%')
+            OR sys.sys_name LIKE concat('%',#{keyword},'%')
+            )
+        </if>
+        <if test="sysIds != null">
+            AND sys.id IN (${sysIds})
+        </if>
+        <if test="sysId != null">
+            AND sys.id = #{sysId}
+        </if>
+    </select>
+
+    <update id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        UPDATE sm_system
+        SET
+        status = 0
+        WHERE
+        id = #{id}
+    </update>
+
+    <select id="getUserSysIds" parameterType="java.lang.String" resultType="java.lang.Integer">
+        SELECT user_system.id
+        FROM (
+        SELECT A.id, A.sys_name, A.status, B.user_name FROM sm_system A
+        JOIN ad_entity_user_role B ON A.id = B.resource_id AND B.resource_type = 'sys'
+        UNION
+        SELECT A.id, A.sys_name, A.status, B.user_name FROM sm_system A
+        JOIN ad_entity_user_role B ON A.id = B.major_resource_id AND B.resource_type != 'sys'
+        ) user_system
+        WHERE user_system.status != 0 AND user_system.user_name = #{userName}
+    </select>
+
+    <select id="getAllSysIds" resultType="java.lang.Integer">
+        SELECT
+        sys.id
+        FROM sm_system sys
+        WHERE sys.status != 0
+    </select>
+</mapper>
