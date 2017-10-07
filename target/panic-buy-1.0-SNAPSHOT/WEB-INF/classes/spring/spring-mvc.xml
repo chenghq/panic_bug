@@ -55,7 +55,7 @@
         </mvc:interceptor>
     </mvc:interceptors>
 
-    <!-- 开启shiro注解-->
+    <!-- �?启shiro注解-->
     <!--
         <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"
               depends-on="lifecycleBeanPostProcessor">

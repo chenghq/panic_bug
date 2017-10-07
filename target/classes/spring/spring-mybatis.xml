@@ -26,7 +26,7 @@
         <property name="logAbandoned" value="${druid.logAbandoned}"/>
         <property name="filters" value="${druid.filters}"/>
     </bean>
-    <!-- 添加cupid数据库改造 -->
+    <!-- 添加cupid数据库改�? -->
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource"/>
         <property name="mapperLocations">
@@ -45,13 +45,11 @@
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
     </bean>
 
-    <!-- 配置事务管理器 -->
     <bean id="transactionManager"
           class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource"/>
     </bean>
 
-    <!-- 注解方式配置事务 -->
     <tx:annotation-driven transaction-manager="transactionManager"/>
 
 </beans>

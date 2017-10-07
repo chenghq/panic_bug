@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
- * Created by 13072937 on 2017/9/27.
+ * Created on 2017/9/27.
  * 登录处理
  */
 public class LoginInterceptor extends HandlerInterceptorAdapter {

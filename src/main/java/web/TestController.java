@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Created by 13072937 on 2017/9/27.
+ * Created on 2017/9/27.
  */
 @RestController
 @RequestMapping("/test")
