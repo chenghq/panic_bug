@@ -1,3 +1,4 @@
+/*
 (function (window) {
     // 01.注册一个应用程序的主模块(module方法如果之传入一个参数就不是创建一个新模块)
     window.angular.module('myApp', []);
@@ -7,4 +8,10 @@
             alert("Login");
         };
     }]);
-})(window);
+})(window);*/
+
+angular.module("myApp").controller("LoginController", ["$scope", function ($scope) {
+    $scope.login = function() {
+        alert("Login");
+    };
+}]);
