@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="data.database.user.UserMapper">
+    <resultMap id="BaseResultMap" type="data.database.user.pojo.User">
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="user_name" property="userName" jdbcType="VARCHAR" />
+        <result column="password" property="password" jdbcType="VARCHAR" />
+        <result column="phone" property="phone" jdbcType="VARCHAR" />
+        <result column="email" property="email" jdbcType="VARCHAR" />
+        <result column="active" property="active" jdbcType="INTEGER"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, user_name, password, phone, email, active
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM user
+        WHERE id = #{id,jdbcType=INTEGER} and active = 1
+    </select>
+    <insert id="insert" parameterType="data.database.user.pojo.User">
+        insert into sm_system (
+        <include refid="Base_Column_List" />
+        )
+        values (
+        #{id,jdbcType=INTEGER},
+        #{userName,jdbcType=VARCHAR},
+        #{password,jdbcType=VARCHAR},
+        #{phone,jdbcType=VARCHAR},
+        #{email,jdbcType=VARCHAR},
+        #{active,jdbcType=INTEGER}
+        )
+    </insert>
+
+    <select id="getByParams" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM user
+        WHERE 1=1
+        <if test="userName != null">
+            AND user_name = #{userName}
+        </if>
+        <if test="password != null">
+            AND password = #{password}
+        </if>
+
+        AND active = 1
+    </select>
+</mapper>

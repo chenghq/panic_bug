@@ -10,8 +10,17 @@
     }]);
 })(window);*/
 
-angular.module("myApp").controller("LoginController", ["$scope", function ($scope) {
+myApp.controller("LoginController", ["$scope", "HttpService", function ($scope, HttpService) {
     $scope.login = function() {
-        alert("Login");
+
+        var params = {
+            userName: $scope.userName,
+            password: $scope.password
+        };
+
+        HttpService.get("http://localhost:8080/login/user.do", params).then(function (response) {
+            alert(response.data);
+        });
+
     };
 }]);
